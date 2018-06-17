@@ -20,13 +20,8 @@ class Utils {
      */
     static int getStatusBarHeight(Activity activity) {
         Rect rectangle = new Rect();
-        Window window = activity.getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
-        int statusBarHeight = rectangle.top;
-        int contentViewTop = window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-        int titleBarHeight = contentViewTop - statusBarHeight;
-
-        return statusBarHeight;
+        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
+        return Math.max(rectangle.top, Utils.convertToDp(activity, 26));
     }
 
     static int convertToDp(Context context, float sizeInDp) {
@@ -38,7 +33,9 @@ class Utils {
         int radiusInDP = convertToDp(context, cornerRadius);
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setCornerRadii(new float[] { radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP });
+        shape.setCornerRadii(
+                new float[]{radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP, radiusInDP,
+                            radiusInDP});
         shape.setColor(backgroundColor);
         v.setBackground(shape);
     }
