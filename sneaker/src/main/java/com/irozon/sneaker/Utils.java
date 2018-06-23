@@ -21,7 +21,7 @@ class Utils {
     static int getStatusBarHeight(Activity activity) {
         Rect rectangle = new Rect();
         activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
-        return Math.max(rectangle.top, Utils.convertToDp(activity, 0));
+        return Math.max(rectangle.top, 0);
     }
 
     static int convertToDp(Context context, float sizeInDp) {
