@@ -3,18 +3,15 @@ package com.irozon.sneaker;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,6 +49,7 @@ public class Sneaker implements View.OnClickListener {
     private static Typeface mTypeFace = null;
     private static int mCornerRadius = DEFAULT_VALUE;
     private static int mMargin = DEFAULT_VALUE;
+    private static int mLeftPadding, mTopPadding, mRightPadding, mBottomPadding;
 
     /**
      * Constructor
@@ -119,6 +117,10 @@ public class Sneaker implements View.OnClickListener {
         mTypeFace = null;
         mCornerRadius = DEFAULT_VALUE;
         mMargin = DEFAULT_VALUE;
+        mLeftPadding = 0;
+        mTopPadding = 0;
+        mRightPadding = 0;
+        mBottomPadding = 0;
     }
 
     /**
@@ -354,6 +356,22 @@ public class Sneaker implements View.OnClickListener {
     }
 
     /**
+     * Adds padding to the Sneaker view.
+     *
+     * @param left   Left padding.
+     * @param top    Top padding.
+     * @param right  Right padding.
+     * @param bottom Bottom padding.
+     */
+    public Sneaker addPadding(int left, int top, int right, int bottom) {
+        mLeftPadding = left;
+        mTopPadding = top;
+        mRightPadding = right;
+        mBottomPadding = bottom;
+        return this;
+    }
+
+    /**
      * Disable/Enable auto hiding sneaker
      *
      * @param autoHide
@@ -444,8 +462,9 @@ public class Sneaker implements View.OnClickListener {
         mIconColorFilterColor = Color.parseColor("#000000");
         mIcon = R.drawable.ic_warning;
 
-        if (getContext() != null)
+        if (getContext() != null) {
             sneakView();
+        }
     }
 
     /**
@@ -459,8 +478,9 @@ public class Sneaker implements View.OnClickListener {
         mIconColorFilterColor = Color.parseColor("#FFFFFF");
         mIcon = R.drawable.ic_error;
 
-        if (getContext() != null)
+        if (getContext() != null) {
             sneakView();
+        }
         return null;
     }
 
@@ -475,8 +495,9 @@ public class Sneaker implements View.OnClickListener {
         mIconColorFilterColor = Color.parseColor("#FFFFFF");
         mIcon = R.drawable.ic_success;
 
-        if (getContext() != null)
+        if (getContext() != null) {
             sneakView();
+        }
         return null;
     }
 
@@ -489,18 +510,24 @@ public class Sneaker implements View.OnClickListener {
         LinearLayout layout = new LinearLayout(getContext());
         layoutWeakReference = new WeakReference<>(layout);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mHeight == DEFAULT_VALUE ? (Utils.getStatusBarHeight((Activity) getContext()) + Utils.convertToDp(getContext(), 56)) : Utils.convertToDp(getContext(), mHeight));
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, (
+                mHeight == DEFAULT_VALUE ? (Utils.getStatusBarHeight((Activity) getContext()) +
+                        Utils.convertToDp(getContext(), 56)) : Utils
+                        .convertToDp(getContext(), mHeight)) + mTopPadding + mBottomPadding);
+
         if (mMargin != DEFAULT_VALUE) {
             layoutParams.setMargins(Utils.convertToDp(getContext(), mMargin),
-                    Utils.convertToDp(getContext(), mMargin),
-                    Utils.convertToDp(getContext(), mMargin),
-                    Utils.convertToDp(getContext(), mMargin)
+                                    Utils.convertToDp(getContext(), mMargin),
+                                    Utils.convertToDp(getContext(), mMargin),
+                                    Utils.convertToDp(getContext(), mMargin)
             );
         }
         layout.setLayoutParams(layoutParams);
         layout.setOrientation(LinearLayout.HORIZONTAL);
         layout.setGravity(Gravity.CENTER_VERTICAL);
-        layout.setPadding(46, Utils.getStatusBarHeight((Activity) getContext()), 46, 0);
+        layout.setPadding(46 + mLeftPadding, Utils.getStatusBarHeight((Activity) getContext()) + mTopPadding,
+                          46 + mRightPadding, mBottomPadding);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             layout.setElevation(6);
         }
@@ -516,7 +543,9 @@ public class Sneaker implements View.OnClickListener {
         if (mIcon != DEFAULT_VALUE || mIconDrawable != null) {
             if (!mIsCircular) {
                 AppCompatImageView ivIcon = new AppCompatImageView(getContext());
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Utils.convertToDp(getContext(), mIconSize), Utils.convertToDp(getContext(), mIconSize));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Utils.convertToDp(getContext(), mIconSize),
+                                                                             Utils.convertToDp(getContext(),
+                                                                                               mIconSize));
                 ivIcon.setLayoutParams(lp);
 
                 if (mIcon == DEFAULT_VALUE) {
@@ -531,7 +560,9 @@ public class Sneaker implements View.OnClickListener {
                 layout.addView(ivIcon);
             } else {
                 RoundedImageView ivIcon = new RoundedImageView(getContext());
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Utils.convertToDp(getContext(), mIconSize), Utils.convertToDp(getContext(), mIconSize));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Utils.convertToDp(getContext(), mIconSize),
+                                                                             Utils.convertToDp(getContext(),
+                                                                                               mIconSize));
                 ivIcon.setLayoutParams(lp);
 
                 if (mIcon == DEFAULT_VALUE) {
@@ -549,25 +580,30 @@ public class Sneaker implements View.OnClickListener {
 
         // Title and description
         LinearLayout textLayout = new LinearLayout(getContext());
-        LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
         textLayout.setLayoutParams(textLayoutParams);
         textLayout.setOrientation(LinearLayout.VERTICAL);
 
-        LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lpTv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                       ViewGroup.LayoutParams.WRAP_CONTENT);
         if (!mTitle.isEmpty()) {
             TextView tvTitle = new TextView(getContext());
             tvTitle.setLayoutParams(lpTv);
             tvTitle.setGravity(Gravity.CENTER_VERTICAL);
-            if (!mMessage.isEmpty())
+            if (!mMessage.isEmpty()) {
                 tvTitle.setPadding(46, 26, 26, 0); // Top padding if there is message
-            else
+            } else {
                 tvTitle.setPadding(46, 0, 26, 0); // No top padding if there is no message
-            if (mTitleColor != DEFAULT_VALUE)
+            }
+            if (mTitleColor != DEFAULT_VALUE) {
                 tvTitle.setTextColor(mTitleColor);
+            }
 
             // typeface
-            if (mTypeFace != null)
+            if (mTypeFace != null) {
                 tvTitle.setTypeface(mTypeFace);
+            }
 
             tvTitle.setTextSize(14);
             tvTitle.setText(mTitle);
@@ -579,16 +615,19 @@ public class Sneaker implements View.OnClickListener {
             TextView tvMessage = new TextView(getContext());
             tvMessage.setLayoutParams(lpTv);
             tvMessage.setGravity(Gravity.CENTER_VERTICAL);
-            if (!mTitle.isEmpty())
+            if (!mTitle.isEmpty()) {
                 tvMessage.setPadding(46, 0, 26, 26); // Bottom padding if there is title
-            else
+            } else {
                 tvMessage.setPadding(46, 0, 26, 0); // No bottom padding if there is no title
-            if (mMessageColor != DEFAULT_VALUE)
+            }
+            if (mMessageColor != DEFAULT_VALUE) {
                 tvMessage.setTextColor(mMessageColor);
+            }
 
             // typeface
-            if (mTypeFace != null)
+            if (mTypeFace != null) {
                 tvMessage.setTypeface(mTypeFace);
+            }
 
             tvMessage.setTextSize(12);
             tvMessage.setText(mMessage);
